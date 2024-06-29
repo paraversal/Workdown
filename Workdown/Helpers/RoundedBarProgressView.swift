@@ -9,10 +9,8 @@ import Foundation
 import SwiftUI
 
 struct RoundedBarProgressView: ProgressViewStyle {
-	
 	var completedColor: Color
 	var inactiveColor: Color
-	
 	func makeBody(configuration: Configuration) -> some View {
 		ZStack(alignment: .leading) {
 			RoundedRectangle(cornerRadius: 5)

@@ -9,25 +9,19 @@ import SwiftUI
 import Foundation
 
 struct ExerciseView: View {
-	
 	@Environment(\.dismiss) var dismiss
-	
-	var StartTime: Date
-	@State var Timer: String = "00:00"
-	@Binding var SetCount: Int
-	@Binding var WorkoutState: Int
-	@Binding var IsRestPeriod: Bool
-	var TotalSetsInWorkout: Int
-	@Binding var SkipToNextScreen: Bool
-	
+	var startTime: Date
+	@State var timer: String = "00:00"
+	@Binding var setCount: Int
+	@Binding var workoutState: Int
+	@Binding var isRestPeriod: Bool
+	var totalSetsInWorkout: Int
+	@Binding var skipToNextScreen: Bool
 	@Binding var currentPhase: WorkoutPhase?
-	@Binding var NextPhase: WorkoutPhase?
-	
-	@Binding var WorkoutDone: Bool
-	
+	@Binding var nextPhase: WorkoutPhase?
+	@Binding var workoutDone: Bool
 	var body: some View {
-		
-		let timer = Foundation.Timer.publish(every: 1, on: .main, in: .common).autoconnect().eraseToAnyPublisher()
+		let timerPublisher = Foundation.Timer.publish(every: 1, on: .main, in: .common).autoconnect().eraseToAnyPublisher()
 		// MARK: - Progress Box
 		ZStack {
 			VStack {
@@ -43,53 +37,52 @@ struct ExerciseView: View {
 						}.padding(.horizontal)
 						 .shadow(radius: 5)
 					})
-					
+
 					Spacer()
 				}
 				RoundedRectangle(cornerRadius: 25.0)
 					.foregroundStyle(.blue.opacity(0.15))
 					.overlay {
 						VStack {
-							Text(Timer)
+							Text(timer)
 								.font(.title)
 								.padding(.bottom)
 								.bold()
 								.scaleEffect(1.5)
-								.onReceive(timer) { currentTime in
-									if !WorkoutDone {
-										Timer = timeElapsedBetween(StartTime, currentTime)
+								.onReceive(timerPublisher) { currentTime in
+									if !workoutDone {
+										timer = timeElapsedBetween(startTime, currentTime)
 									}
 								}
-							ProgressView(value: Double(WorkoutState), total: Double(TotalSetsInWorkout))
+							ProgressView(value: Double(workoutState), total: Double(totalSetsInWorkout))
 								.progressViewStyle(RoundedBarProgressView(completedColor: .green.opacity(0.7), inactiveColor: .gray.opacity(0.5)))
-							
+
 						}
 					}
 					.frame(width: 300, height: 150)
 					.padding(.top, 20)
 					.shadow(color: .gray.opacity(0.4), radius: 20)
-				
-				
+
 				Spacer()
-				
-				if WorkoutDone {
+
+				if workoutDone {
 					Text("Workout Done!").font(.title).bold()
 				}
-				
+
 				// MARK: - Middle Box
 				switch currentPhase {
-					case .ExercisePhase(let exercise, _):
-						ExerciseTextView(Exercise: exercise, WorkoutState: $WorkoutState).transition(.slide)
-						.shadow(color: .gray.opacity(0.4), radius: 20)
-					case .RestPhase(let int):
-						RestView(restTime: int, NextPhase: NextPhase, WorkoutState: $WorkoutState, IsRestPeriod: $IsRestPeriod).transition(.slide)
-						.shadow(color: .gray.opacity(0.4), radius: 20)
-					case .none:
-						EmptyView()
+				case .exercisePhase(let exercise, _):
+					ExerciseTextView(exercise: exercise, workoutState: $workoutState).transition(.slide)
+					.shadow(color: .gray.opacity(0.4), radius: 20)
+				case .restPhase(let int):
+					RestView(restTime: int, nextPhase: nextPhase, workoutState: $workoutState, isRestPeriod: $isRestPeriod).transition(.slide)
+					.shadow(color: .gray.opacity(0.4), radius: 20)
+				case .none:
+					EmptyView()
 				}
 
 				Spacer()
-				
+
 				// MARK: - Bottom box
 				RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
 					.foregroundStyle(.green.opacity(0.10))
@@ -97,75 +90,73 @@ struct ExerciseView: View {
 						VStack {
 							HStack {
 								Spacer()
-								Text("Set \(SetCount)")
+								Text("Set \(setCount)")
 									.font(.title3)
 									.bold()
 								Spacer()
 								Rectangle()
 									.frame(width: 1, height: 60)
 								Spacer()
-								
+
 								// NEXT UP
 								VStack {
 									Text("Next up:")
 										.font(.body).bold()
 										.padding(.bottom, 2)
-									
-									Text(RepresentPhase(phase: NextPhase))
+
+									Text(representPhase(phase: nextPhase))
 										.font(.callout)
 								}
 								Spacer()
-								
+
 							}
 						}
-						
+
 					}.padding(.bottom, 30)
 					.onChange(of: currentPhase) { _, newValue in
 						switch newValue {
-						case .ExercisePhase(_, let int):
-							SetCount = int
-						case .RestPhase(_):
-							IsRestPeriod = true
+						case .exercisePhase(_, let int):
+							setCount = int
+						case .restPhase:
+							isRestPeriod = true
 						case .none:
 							()
 						}
-					}.offset(y: WorkoutDone ? 200 : 0)
+					}.offset(y: workoutDone ? 200 : 0)
 					.transition(.push(from: .bottom))
 					.shadow(color: .gray.opacity(0.7), radius: 20)
-				
-				
+
 			}
 			.foregroundStyle(Color.primary)
 			.backgroundStyle(Color.secondary)
-			
+
 		}
-		
-		
+
 	}
 }
 
 // MARK: - Middle Box Exercise Phase View
 struct ExerciseTextView: View {
-	
-	var Exercise: Exercise
+
+	var exercise: Exercise
 	@State var exerciseTimer: Int?
-	@Binding var WorkoutState: Int
-	
-	init(Exercise: Exercise, WorkoutState: Binding<Int>){
-		if let tm = Exercise.ExerciseTimer {
+	@Binding var workoutState: Int
+
+	init(exercise: Exercise, workoutState: Binding<Int>) {
+		if let tm = exercise.exerciseTimer {
 			exerciseTimer = tm
 		}
-		self.Exercise = Exercise
-		self._WorkoutState = WorkoutState
+		self.exercise = exercise
+		self._workoutState = workoutState
 	}
-	
+
 	var body: some View {
 		ZStack {
 			RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
 				.foregroundStyle(.cyan.opacity(0.2))
 				.padding(.all, 50)
 			VStack {
-				Text(Exercise.Name)
+				Text(exercise.name)
 					.font(.largeTitle)
 					.multilineTextAlignment(.center)
 					.bold()
@@ -174,39 +165,32 @@ struct ExerciseTextView: View {
 					.scaledToFill()
 					.minimumScaleFactor(0.5)
 					.lineLimit(1)
-				
-				Text("\(Exercise.Reps)")
+				Text("\(exercise.reps)")
 					.font(.callout)
 					.bold()
 					.padding()
-				
-				Text(Exercise.Description)
+				Text(exercise.description)
 					.multilineTextAlignment(.center)
 					.font(.body)
 					.padding()
 					.frame(width: 300)
 					.scaledToFill()
 					.minimumScaleFactor(0.5)
-				
 				if exerciseTimer != nil {
-					
 					let timer = Foundation.Timer.publish(every: 1, on: .main, in: .common).autoconnect().eraseToAnyPublisher()
-					
 					Text("\(exerciseTimer ?? 0)s")
 						.font(.title)
 						.bold()
 						.padding()
 						.onReceive(timer, perform: { _ in
 							if exerciseTimer ?? 0 <= 0 {
-								WorkoutState += 1
+								workoutState += 1
 							} else if exerciseTimer! > 0 {
 								exerciseTimer! -= 1
 							}
-							
 						})
-					
 				}
-				
+
 			}
 		}
 	}
@@ -215,12 +199,12 @@ struct ExerciseTextView: View {
 // MARK: - Middle Box Rest Phase View
 struct RestView: View {
 	@State var restTime: Int
-	var NextPhase: WorkoutPhase?
-	@Binding var WorkoutState: Int
-	@Binding var IsRestPeriod: Bool
-	
+	var nextPhase: WorkoutPhase?
+	@Binding var workoutState: Int
+	@Binding var isRestPeriod: Bool
+
 	let timer = Foundation.Timer.publish(every: 1, on: .main, in: .common).autoconnect().eraseToAnyPublisher()
-	
+
 	var body: some View {
 		ZStack {
 			RoundedRectangle(cornerRadius: 25.0)
@@ -241,22 +225,19 @@ struct RestView: View {
 					.bold()
 					.padding(.bottom, 30)
 					.onTapGesture {
-						WorkoutState += 1
-						IsRestPeriod = false
+						workoutState += 1
+						isRestPeriod = false
 					}
 					.onReceive(timer, perform: { _ in
-						if IsRestPeriod {
+						if isRestPeriod {
 							if restTime <= 0 {
-								withAnimation() {
-									IsRestPeriod = false
-									WorkoutState += 1
+								withAnimation {
+									isRestPeriod = false
+									workoutState += 1
 								}
-								
-								
 							}
 							self.restTime = max(self.restTime - 1, 0)
 						}
-						
 					})
 			}
 		}

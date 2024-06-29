@@ -7,11 +7,11 @@
 
 import Foundation
 
-func RepresentPhase(phase: WorkoutPhase?) -> String {
+func representPhase(phase: WorkoutPhase?) -> String {
 	switch phase {
-	case .ExercisePhase(let exercise, let int):
-		return "\(exercise.Name) Set \(int)"
-	case .RestPhase(let int):
+	case .exercisePhase(let exercise, let int):
+		return "\(exercise.name) Set \(int)"
+	case .restPhase(let int):
 		return "\(int)s Rest"
 	case .none:
 		return "Done! 🎉"

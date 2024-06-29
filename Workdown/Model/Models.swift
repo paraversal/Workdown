@@ -8,28 +8,28 @@
 import Foundation
 
 enum WorkoutPhase: Equatable {
-	case ExercisePhase(Exercise, Int), RestPhase(Int)
-	
+	case exercisePhase(Exercise, Int), restPhase(Int)
+
 	static func == (lhs: WorkoutPhase, rhs: WorkoutPhase) -> Bool {
 		switch (lhs, rhs) {
-		case let (.ExercisePhase(lhsExercise, lhsInt), .ExercisePhase(rhsExercise, rhsInt)):
+		case let (.exercisePhase(lhsExercise, lhsInt), .exercisePhase(rhsExercise, rhsInt)):
 			return lhsExercise == rhsExercise && lhsInt == rhsInt
-		case let (.RestPhase(lhsInt), .RestPhase(rhsInt)):
+		case let (.restPhase(lhsInt), .restPhase(rhsInt)):
 			return lhsInt == rhsInt
 		default:
 			return false
 		}
 	}
-	
+
 }
 
 struct Workout: Identifiable, Codable {
 	var id = UUID()
-	
-	var Name: String
-	var HistoricalRepetitions: Int
+
+	var name: String
+	var historicalRepetitions: Int
 	var _exercises: [Exercise]
-	var Exercises: [Exercise] {
+	var exercises: [Exercise] {
 		get {
 			return _exercises
 		}
@@ -37,85 +37,83 @@ struct Workout: Identifiable, Codable {
 		// This doesn't allow for super flexible exercise layouts, but that's fine for now
 		set {
 			_exercises = newValue
-			
-			
-			var LocalSetsArray: [WorkoutPhase] = []
-			for (i, exercise) in self.Exercises.map({ exercise in (exercise.Sets, exercise) }) {
-				for inner_i in 1...i {
-					LocalSetsArray.append(.ExercisePhase(exercise, inner_i))
-					LocalSetsArray.append(.RestPhase(exercise.Rest))
+
+			var localSetsArray: [WorkoutPhase] = []
+			for (itr, exercise) in self.exercises.map({ exercise in (exercise.sets, exercise) }) {
+				for inner_i in 1...itr {
+					localSetsArray.append(.exercisePhase(exercise, inner_i))
+					localSetsArray.append(.restPhase(exercise.rest))
 				}
 			}
-			SetsArray = LocalSetsArray
-			
-			
+			self.setsArray = localSetsArray
+
 		}
 	}
-	
-	var TotalSetsCount: Int
-	var SetsArray: [WorkoutPhase]
-	
+
+	var totalSetsCount: Int
+	var setsArray: [WorkoutPhase]
+
 	init(name: String, historicalRepetitions: Int, exercises: [Exercise]) {
-		self.Name = name
-		self.HistoricalRepetitions = historicalRepetitions
+		self.name = name
+		self.historicalRepetitions = historicalRepetitions
 		self._exercises = exercises
 		// commented out in case we need this in the future
 		// self.TotalRepsCount = exercises.map({ exercise in exercise.Sets*exercise.Reps }).reduce(0, +)
-					
-		var LocalSetsArray: [WorkoutPhase] = []
-		for (i, exercise) in exercises.map({ exercise in (exercise.Sets, exercise) }) {
-			for inner_i in 1...i {
-				LocalSetsArray.append(.ExercisePhase(exercise, inner_i))
-				LocalSetsArray.append(.RestPhase(exercise.Rest))
+
+		var localSetsArray: [WorkoutPhase] = []
+		for (itr, exercise) in exercises.map({ exercise in (exercise.sets, exercise) }) {
+			for inner_i in 1...itr {
+				localSetsArray.append(.exercisePhase(exercise, inner_i))
+				localSetsArray.append(.restPhase(exercise.rest))
 			}
 		}
-		self.SetsArray = LocalSetsArray
-		TotalSetsCount = LocalSetsArray.count
+		self.setsArray = localSetsArray
+		totalSetsCount = localSetsArray.count
 
 	}
-	
+
 }
 
 struct Exercise: Identifiable, Equatable, Codable {
 	var id = UUID()
-	
-	var Name: String
-	var Description: String
-	var Reps: String
-	var Rest: Int
-	var Sets: Int
-	
-	var ExerciseTimer: Int? = nil
-	
+
+	var name: String
+	var description: String
+	var reps: String
+	var rest: Int
+	var sets: Int
+
+	var exerciseTimer: Int?
+
 	init(name: String, description: String, reps: Int, rest: Int, sets: Int) {
-		self.Name = name
-		self.Description = description
-		self.Reps = String("\(reps) Repetitions")
-		self.Rest = rest
-		self.Sets = sets
+		self.name = name
+		self.description = description
+		self.reps = String("\(reps) Repetitions")
+		self.rest = rest
+		self.sets = sets
 	}
-	
+
 	init(name: String, description: String, reps: String, rest: Int, sets: Int) {
-			self.Name = name
-			self.Description = description
-			self.Reps = reps
-			self.Rest = rest
-			self.Sets = sets
+			self.name = name
+			self.description = description
+			self.reps = reps
+			self.rest = rest
+			self.sets = sets
 		}
-	
+
 	init(name: String, description: String, reps: String, rest: Int, sets: Int, exerciseTimer: Int) {
-		self.Name = name
-		self.Description = description
-		self.Reps = reps
-		self.Rest = rest
-		self.Sets = sets
-		self.ExerciseTimer = exerciseTimer
+		self.name = name
+		self.description = description
+		self.reps = reps
+		self.rest = rest
+		self.sets = sets
+		self.exerciseTimer = exerciseTimer
 	}
-	
+
 	static func == (lhs: Exercise, rhs: Exercise) -> Bool {
-		
+
 		return lhs.id == rhs.id
-		
+
 	}
 }
 
@@ -138,7 +136,6 @@ extension Workout: RawRepresentable {
 			return result
 		}
 }
-
 
 extension [Workout]: RawRepresentable {
 	public init?(rawValue: String) {

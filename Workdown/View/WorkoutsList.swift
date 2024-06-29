@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct WorkoutsList: View {
-	
 	@Binding var workouts: [Workout]
-	
 	var body: some View {
 		ZStack {
 			Rectangle()
@@ -20,23 +18,20 @@ struct WorkoutsList: View {
 				List($workouts) { $workout in
 					NavigationLink(destination: WorkoutDetailView(workout: $workout)) {
 						VStack(alignment: .leading) {
-							Text(workout.Name)
+							Text(workout.name)
 								.font(.headline)
-							Text("Total Historical Repetitions: \(workout.HistoricalRepetitions)")
+							Text("Total Historical Repetitions: \(workout.historicalRepetitions)")
 								.font(.subheadline)
 						}
 					}
 				}
 				.navigationTitle("Workouts")
 			}
-		
 		}
 	}
 }
 
 #Preview {
 	@State var sampleWorkouts = SAMPLEWORKOUT_LIST
-	
 	return WorkoutsList(workouts: $sampleWorkouts)
 }
-

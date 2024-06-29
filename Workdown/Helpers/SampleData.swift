@@ -55,7 +55,7 @@ var MYWORKOUTS = [
 			Exercise(name: "Cat-Cow Stretch", description: "On hands and knees, arch back up (cat) and then dip it down (cow), moving smoothly between the two.", reps: 1, rest: 0, sets: 1)
 		]
 	),
-	
+
 	Workout(
 		name: "Bouldering Strength 1",
 		historicalRepetitions: 0,
@@ -89,8 +89,7 @@ var MYWORKOUTS = [
 			Exercise(name: "Side Plank", description: "Balance on one forearm and side of one foot, hold body in straight line.", reps: "20-30s hold each side", rest: 30, sets: 3, exerciseTimer: 60)
 		]
 	)
-];
-
+]
 
 var SAMPLEWORKOUT_LIST = [
 			Workout(

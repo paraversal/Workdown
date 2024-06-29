@@ -7,76 +7,59 @@
 
 import SwiftUI
 
-struct WorkoutManager: View{
-	
+struct WorkoutManager: View {
 	@Environment(\.dismiss) var dismiss
-	
-	var Workout: Workout
-	@State var IsRestPeriod = false
-	
-	@State var WorkoutState: Int
-	
+	var workout: Workout
+	@State var isRestPeriod = false
+	@State var workoutState: Int
 	@State var currentPhase: WorkoutPhase?
 	@State var nextPhase: WorkoutPhase?
-	@State var CurrentSet: Int
-	
-	@State var SkipToNextScreen = false
-	
-	@State var WorkoutDone = false
-	
-	let StartTime: Date
-
+	@State var currentSet: Int
+	@State var skipToNextScreen = false
+	@State var workoutDone = false
+	let startTime: Date
 
 	var body: some View {
-		ExerciseView(StartTime: StartTime, SetCount: $CurrentSet, WorkoutState: $WorkoutState, IsRestPeriod: $IsRestPeriod, TotalSetsInWorkout: Workout.TotalSetsCount, SkipToNextScreen: $SkipToNextScreen, currentPhase: $currentPhase, NextPhase: $nextPhase, WorkoutDone: $WorkoutDone)
+		ExerciseView(startTime: startTime, setCount: $currentSet, workoutState: $workoutState, isRestPeriod: $isRestPeriod, totalSetsInWorkout: workout.totalSetsCount, skipToNextScreen: $skipToNextScreen, currentPhase: $currentPhase, nextPhase: $nextPhase, workoutDone: $workoutDone)
 			.onTapGesture {
-				SkipToNextScreen = true
+				skipToNextScreen = true
 			}
-			.onChange(of: SkipToNextScreen) { _, newvalue in
+			.onChange(of: skipToNextScreen) { _, newvalue in
 				if newvalue != true { return }
 				withAnimation(.linear) {
-					SkipToNextScreen = false
-					if WorkoutState == Workout.SetsArray.count {
-						WorkoutDone = true
+					skipToNextScreen = false
+					if workoutState == workout.setsArray.count {
+						workoutDone = true
 						dismiss()
 					}
-					if WorkoutState == Workout.SetsArray.count + 1 {
+					if workoutState == workout.setsArray.count + 1 {
 						dismiss()
 					}
-					
-					WorkoutState += 1
-					currentPhase = Workout.SetsArray[safe: WorkoutState]
+					workoutState += 1
+					currentPhase = workout.setsArray[safe: workoutState]
 				}
-			}.onChange(of: WorkoutState) { _, newval in
+			}.onChange(of: workoutState) { _, newval in
 				withAnimation(.linear) {
-					if newval == Workout.SetsArray.count {
-						WorkoutDone = true
-						//TODO: leave workout
+					if newval == workout.setsArray.count {
+						workoutDone = true
+						dismiss()
 					}
-					
-					currentPhase = Workout.SetsArray[safe: newval]
-					nextPhase = Workout.SetsArray[safe: newval+1]
+					currentPhase = workout.setsArray[safe: newval]
+					nextPhase = workout.setsArray[safe: newval+1]
 				}
-				
 			}
-		
 	}
-	
-	
 	init(workout: Workout, startTime: Date) {
-		self.Workout = workout
-		self.StartTime = startTime
-		self.currentPhase = Workout.SetsArray[safe: 0]
-		self.nextPhase = Workout.SetsArray[safe: 1]
-		self.WorkoutState = 0
-		self.CurrentSet = 1
+		self.workout = workout
+		self.startTime = startTime
+		self.currentPhase = workout.setsArray[safe: 0]
+		self.nextPhase = workout.setsArray[safe: 1]
+		self.workoutState = 0
+		self.currentSet = 1
 	}
-	
-	
 }
 
 #Preview {
- 
  var sampleWorkout = Workout(
 	name: "Upper Body Strength",
 			 historicalRepetitions: 100,
@@ -91,8 +74,5 @@ struct WorkoutManager: View{
 			dateFormatter.dateFormat = "yyyy-MM-dd hh:mma"
 			return dateFormatter.date(from: "2024-06-26 2:40pm") ?? Date()
 		}()
-	
 	return WorkoutManager(workout: sampleWorkout, startTime: startTime)
 }
- 
-

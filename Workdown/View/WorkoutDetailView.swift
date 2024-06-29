@@ -8,20 +8,20 @@
 import SwiftUI
 
 struct WorkoutDetailView: View {
-	
+
 	@Binding var workout: Workout
 	@State private var editMode = EditMode.inactive
-	
-	@State var WorkoutPresent = false
-	
+
+	@State var workoutPresent = false
+
 	var body: some View {
 
 		VStack {
-			List{
-				ForEach($workout.Exercises, editActions: .delete) { $exercise in
+			List {
+				ForEach($workout.exercises, editActions: .delete) { $exercise in
 					ExercisePreview(exercise: $exercise)
 				}
-					
+
 			}
 			 .navigationBarItems(
 					trailing:
@@ -35,15 +35,15 @@ struct WorkoutDetailView: View {
 				.frame(width: 70, height: 50)
 				.foregroundStyle(.orange.opacity(0.50))
 				.overlay {
-					Text("\(workout.HistoricalRepetitions)x")
+					Text("\(workout.historicalRepetitions)x")
 						.font(.title2)
 						.foregroundStyle(.white.opacity(0.9))
 						.scaledToFill()
 						.minimumScaleFactor(0.1)
 				}
-			
+
 			Button {
-				WorkoutPresent.toggle()
+				workoutPresent.toggle()
 			} label: {
 				RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
 					.frame(width: 250, height: 70)
@@ -54,15 +54,15 @@ struct WorkoutDetailView: View {
 							.font(.title3.bold())
 							.foregroundStyle(.white.opacity(0.9))
 					}
-			}.fullScreenCover(isPresented: $WorkoutPresent, onDismiss: {
-				workout.HistoricalRepetitions += 1
+			}.fullScreenCover(isPresented: $workoutPresent, onDismiss: {
+				workout.historicalRepetitions += 1
 			}, content: {
 				WorkoutManager(workout: workout, startTime: Date())
 			})
 		}
-		
+
 	}
-	
+
 	private var addButton: some View {
 		   switch editMode {
 		   case .inactive:
@@ -71,46 +71,37 @@ struct WorkoutDetailView: View {
 			   return AnyView(EmptyView())
 		   }
 	   }
-	
+
 	func onAdd() {
 			// To be implemented in the next section
 		}
-	
+
 }
 
 struct ExercisePreview: View {
-	
+
 	@Binding var exercise: Exercise
-	
+
 	var body: some View {
 		VStack(alignment: .leading, content: {
-			Text(exercise.Name)
+			Text(exercise.name)
 				.font(.title)
 				.bold()
-			Text("\(exercise.Reps), \(exercise.Sets) Sets")
+			Text("\(exercise.reps), \(exercise.sets) Sets")
 				.font(.callout)
 				.bold()
-			Text(exercise.Description)
+			Text(exercise.description)
 				.font(.callout)
-			Text("Rest Period: \(exercise.Rest)s")
+			Text("Rest Period: \(exercise.rest)s")
 				.font(.footnote)
-			
-				
-			
 		})
 		.frame(alignment: .leading)
 		.padding()
-	
 	}
-	
-	// TODO: add one to historicalRepetitions
-	
 }
 
 #Preview {
-	
 	@State var workoutlist = SAMPLEWORKOUT_LIST
 	@State var workout = SAMPLEWORKOUT
-	
 	return WorkoutDetailView(workout: $workout)
 }
