@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Calculates the time elapsed between two `Date`s
 func timeElapsedBetween(_ startDate: Date, _ nowDate: Date) -> String {
     let elapsedTimeInterval = nowDate.timeIntervalSince(startDate)
     let hours = Int(elapsedTimeInterval) / 3600
@@ -17,4 +18,5 @@ func timeElapsedBetween(_ startDate: Date, _ nowDate: Date) -> String {
 	} else {
 		return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
 	}
-   }
+	
+}

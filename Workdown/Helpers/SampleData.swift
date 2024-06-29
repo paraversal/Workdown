@@ -127,6 +127,12 @@ var SAMPLEWORKOUT = Workout(
 			 exercises: [
 				 Exercise(name: "Bench Press", description: "Press the barbell upwards", reps: 10, rest: 5, sets: 3),
 				 Exercise(name: "Pull Ups", description: "Pull your body upwards", reps: 8, rest: 90, sets: 3),
+				 Exercise(name: "Shoulder Press", description: "Press the weights upwards", reps: 12, rest: 60, sets: 4),
+				 Exercise(name: "Bench Press", description: "Press the barbell upwards", reps: 10, rest: 5, sets: 3),
+				 Exercise(name: "Pull Ups", description: "Pull your body upwards", reps: 8, rest: 90, sets: 3),
+				 Exercise(name: "Shoulder Press", description: "Press the weights upwards", reps: 12, rest: 60, sets: 4),
+				 Exercise(name: "Bench Press", description: "Press the barbell upwards", reps: 10, rest: 5, sets: 3),
+				 Exercise(name: "Pull Ups", description: "Pull your body upwards", reps: 8, rest: 90, sets: 3),
 				 Exercise(name: "Shoulder Press", description: "Press the weights upwards", reps: 12, rest: 60, sets: 4)
 			 ]
 		 )

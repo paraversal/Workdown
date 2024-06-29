@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Prints a representation of a `WorkoutPhase` for the "Next up" section
 func representPhase(phase: WorkoutPhase?) -> String {
 	switch phase {
 	case .exercisePhase(let exercise, let int):

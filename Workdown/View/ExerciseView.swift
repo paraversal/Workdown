@@ -8,6 +8,7 @@
 import SwiftUI
 import Foundation
 
+/// Shows information about the current `WorkoutPhase` as well as the upcoming `ExercisePhase`
 struct ExerciseView: View {
 	@Environment(\.dismiss) var dismiss
 	var startTime: Date
@@ -26,7 +27,9 @@ struct ExerciseView: View {
 		ZStack {
 			VStack {
 				HStack {
-					Button(action: {dismiss()}, label: {
+					Button(action: {
+						dismiss()
+					}, label: {
 						ZStack {
 							RoundedRectangle(cornerRadius: 10.0)
 								.frame(width: 60, height: 30)
@@ -51,7 +54,9 @@ struct ExerciseView: View {
 								.scaleEffect(1.5)
 								.onReceive(timerPublisher) { currentTime in
 									if !workoutDone {
-										timer = timeElapsedBetween(startTime, currentTime)
+										withAnimation(.snappy) {
+											timer = timeElapsedBetween(startTime, currentTime)
+										}
 									}
 								}
 							ProgressView(value: Double(workoutState), total: Double(totalSetsInWorkout))
@@ -80,9 +85,7 @@ struct ExerciseView: View {
 				case .none:
 					EmptyView()
 				}
-
 				Spacer()
-
 				// MARK: - Bottom box
 				RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
 					.foregroundStyle(.green.opacity(0.10))
@@ -125,13 +128,10 @@ struct ExerciseView: View {
 					}.offset(y: workoutDone ? 200 : 0)
 					.transition(.push(from: .bottom))
 					.shadow(color: .gray.opacity(0.7), radius: 20)
-
 			}
 			.foregroundStyle(Color.primary)
 			.backgroundStyle(Color.secondary)
-
 		}
-
 	}
 }
 
@@ -190,7 +190,6 @@ struct ExerciseTextView: View {
 							}
 						})
 				}
-
 			}
 		}
 	}
@@ -225,18 +224,21 @@ struct RestView: View {
 					.bold()
 					.padding(.bottom, 30)
 					.onTapGesture {
-						workoutState += 1
-						isRestPeriod = false
+						withAnimation(.snappy) {
+							workoutState += 1
+							isRestPeriod = false
+						}
 					}
 					.onReceive(timer, perform: { _ in
-						if isRestPeriod {
-							if restTime <= 0 {
-								withAnimation {
+						withAnimation(.snappy) {
+							if isRestPeriod {
+								if restTime <= 0 {
 									isRestPeriod = false
 									workoutState += 1
+									
 								}
+								self.restTime = max(self.restTime - 1, 0)
 							}
-							self.restTime = max(self.restTime - 1, 0)
 						}
 					})
 			}

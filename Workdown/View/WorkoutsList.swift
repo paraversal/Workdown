@@ -7,12 +7,12 @@
 
 import SwiftUI
 
+/// Lists all  `Workout`s passed to the view
 struct WorkoutsList: View {
 	@Binding var workouts: [Workout]
 	var body: some View {
 		ZStack {
 			Rectangle()
-				.frame(width: .infinity, height: .infinity)
 				.ignoresSafeArea()
 			NavigationView {
 				List($workouts) { $workout in

@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Enum used for state modelling
 enum WorkoutPhase: Equatable {
 	case exercisePhase(Exercise, Int), restPhase(Int)
 
@@ -23,6 +24,7 @@ enum WorkoutPhase: Equatable {
 
 }
 
+/// Model used for a Workout
 struct Workout: Identifiable, Codable {
 	var id = UUID()
 
@@ -34,10 +36,8 @@ struct Workout: Identifiable, Codable {
 			return _exercises
 		}
 		// These meta-properties for the exercises array automatically get updated when we update the exercise array
-		// This doesn't allow for super flexible exercise layouts, but that's fine for now
 		set {
 			_exercises = newValue
-
 			var localSetsArray: [WorkoutPhase] = []
 			for (itr, exercise) in self.exercises.map({ exercise in (exercise.sets, exercise) }) {
 				for inner_i in 1...itr {
@@ -46,10 +46,8 @@ struct Workout: Identifiable, Codable {
 				}
 			}
 			self.setsArray = localSetsArray
-
 		}
 	}
-
 	var totalSetsCount: Int
 	var setsArray: [WorkoutPhase]
 
@@ -74,15 +72,14 @@ struct Workout: Identifiable, Codable {
 
 }
 
+/// Model used for an exercise
 struct Exercise: Identifiable, Equatable, Codable {
 	var id = UUID()
-
 	var name: String
 	var description: String
 	var reps: String
 	var rest: Int
 	var sets: Int
-
 	var exerciseTimer: Int?
 
 	init(name: String, description: String, reps: Int, rest: Int, sets: Int) {
@@ -92,15 +89,15 @@ struct Exercise: Identifiable, Equatable, Codable {
 		self.rest = rest
 		self.sets = sets
 	}
-
+	
 	init(name: String, description: String, reps: String, rest: Int, sets: Int) {
 			self.name = name
 			self.description = description
 			self.reps = reps
 			self.rest = rest
 			self.sets = sets
-		}
-
+	}
+	
 	init(name: String, description: String, reps: String, rest: Int, sets: Int, exerciseTimer: Int) {
 		self.name = name
 		self.description = description
@@ -109,14 +106,13 @@ struct Exercise: Identifiable, Equatable, Codable {
 		self.sets = sets
 		self.exerciseTimer = exerciseTimer
 	}
-
+	
 	static func == (lhs: Exercise, rhs: Exercise) -> Bool {
-
 		return lhs.id == rhs.id
-
 	}
 }
 
+// These extensions are needed for use with `@AppStorage`, but they're currently not in use
 extension Workout: RawRepresentable {
 	public init?(rawValue: String) {
 			guard let data = rawValue.data(using: .utf8),

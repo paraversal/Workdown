@@ -7,7 +7,9 @@
 
 import SwiftUI
 
+/// Handles the workout loop by injecting new `WorkoutPhase`s into the `ExerciseView`
 struct WorkoutManager: View {
+	
 	@Environment(\.dismiss) var dismiss
 	var workout: Workout
 	@State var isRestPeriod = false
