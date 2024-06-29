@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  Workdown
 //
-//  Created by jules on 26.06.24.
+//  Created by paraversal on 26.06.24.
 //
 
 import SwiftUI
